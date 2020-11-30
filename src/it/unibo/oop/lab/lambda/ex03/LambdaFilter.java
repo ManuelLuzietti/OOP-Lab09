@@ -1,6 +1,7 @@
 package it.unibo.oop.lab.lambda.ex03;
 
 import java.awt.BorderLayout;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -14,6 +15,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+
 
 /**
  * Modify this small program adding new filters.
@@ -35,11 +37,19 @@ public final class LambdaFilter extends JFrame {
     private static final long serialVersionUID = 1760990730218643730L;
 
     private enum Command {
-        IDENTITY("No modifications", Function.identity());
-
+        IDENTITY("No modifications", Function.identity()),
+        LOWERCASE("To lower case", x -> x.toLowerCase()),
+        COUNTCHARS("Count chars", (String x) -> String.valueOf(((int) x.chars().count()))),
+        COUNTLINES("Count Lines", (String x)-> {
+        	return String.valueOf(x.lines().count());
+        });
+        
+        
+    	
+    	
         private final String commandName;
         private final Function<String, String> fun;
-
+        
         Command(final String name, final Function<String, String> process) {
             commandName = name;
             fun = process;

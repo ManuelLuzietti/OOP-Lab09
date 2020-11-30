@@ -8,6 +8,7 @@ import java.util.OptionalDouble;
 import java.util.Set;
 import java.util.stream.Stream;
 
+
 /**
  *
  */
@@ -31,42 +32,57 @@ public final class MusicGroupImpl implements MusicGroup {
 
     @Override
     public Stream<String> orderedSongNames() {
-        return null;
+        return this.songs.stream().map(x-> x.getSongName()).sorted();
     }
 
     @Override
     public Stream<String> albumNames() {
-        return null;
+        return this.albums.keySet().stream();
     }
 
     @Override
     public Stream<String> albumInYear(final int year) {
-        return null;
+        return this.albums.entrySet().stream().filter(x->x.getValue()==year).map(x->x.getKey());
     }
 
     @Override
     public int countSongs(final String albumName) {
-        return -1;
+        return (int) songs.stream().filter(x -> x.getAlbumName().orElse("").equals(albumName)).count();
     }
 
     @Override
     public int countSongsInNoAlbum() {
-        return -1;
+        return (int) songs.stream().filter(x -> x.getAlbumName().isEmpty()).count();
     }
 
     @Override
     public OptionalDouble averageDurationOfSongs(final String albumName) {
-        return null;
+        return songs.stream().filter(x->x.getAlbumName().equals(Optional.ofNullable(albumName))).mapToDouble(x->x.duration).average();
     }
 
     @Override
     public Optional<String> longestSong() {
-        return null;
+    	return Optional.ofNullable(this.songs.stream().max( (x,y) -> {
+    		return (int) ( x.getDuration() - y.getDuration());
+    	}).get().getSongName());
     }
 
     @Override
     public Optional<String> longestAlbum() {
-        return null;
+        Map<String, Double> mapAlbumDuration = new HashMap<>();
+        albums.keySet().stream().forEach(x -> {
+        	Double duration =this.songs.stream().filter( y -> y.getAlbumName().equals(Optional.ofNullable(x))).mapToDouble(z -> z.getDuration()).sum();
+        	mapAlbumDuration.put(x, duration);
+        });
+        double max = 0;
+        String maxStr = null;
+        for(var entry: mapAlbumDuration.entrySet()) {
+        	if(entry.getValue() > max) {
+        		max = entry.getValue();
+        		maxStr = entry.getKey();
+        	}
+        }
+        return Optional.ofNullable(maxStr);
     }
 
     private static final class Song {
